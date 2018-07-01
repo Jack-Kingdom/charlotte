@@ -1,0 +1,11 @@
+# IDE file
+.idea
+
+# compiled tmp file
+*.pyc
+build
+*.egg-info
+dist
+
+# virtualenv
+venv
