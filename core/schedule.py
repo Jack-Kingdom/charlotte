@@ -1,15 +1,30 @@
 from queue import Queue
+from tornado.httpclient import HTTPRequest
 
 
-class Scheduler(object):
+class BaseScheduler(object):
+    def get(self):
+        pass
+
+    def put(self, request: HTTPRequest):
+        pass
+
+
+class QueueScheduler(BaseScheduler):
     def __init__(self):
-        self.q = Queue()
+        self.queue = Queue()
 
     def get(self):
-        if not self.q.empty():
-            return self.q.get_nowait()
+        if not self.queue.empty():
+            return self.queue.get_nowait()
         else:
             return None
 
+    def put(self, request: HTTPRequest):
+        self.queue.put_nowait(request)
 
-scheduler = Scheduler()
+    def empty(self):
+        return self.queue.empty()
+
+    def should_close(self):
+        pass
