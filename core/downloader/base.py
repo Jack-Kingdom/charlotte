@@ -1,7 +1,6 @@
 from typing import Callable
-from tornado.httpclient import HTTPRequest, HTTPResponse
+from tornado.httpclient import HTTPRequest
 from core.scheduler.base import BaseScheduler
-from core import setting
 
 
 class BaseDownloader(object):
