@@ -5,7 +5,7 @@ from core.schedule import BaseScheduler, QueueScheduler
 from . import setting
 
 
-class Spider(object):
+class BaseSpider(object):
     def __init__(self, scheduler: BaseScheduler = None):
         self.scheduler = scheduler if scheduler else QueueScheduler()
 
@@ -29,3 +29,5 @@ class Spider(object):
         else:
             print("Body:", response.body)
 
+    def run(self):
+        IOLoop.current().start()
