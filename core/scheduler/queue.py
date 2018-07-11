@@ -8,6 +8,7 @@ class QueueScheduler(BaseScheduler):
     In memory queue scheduler.
     Be careful of memory run out.
     """
+
     def __init__(self):
         self.queue = Queue()
 
