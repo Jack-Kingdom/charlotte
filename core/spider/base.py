@@ -1,26 +1,24 @@
 from tornado.ioloop import IOLoop
 from tornado import httpclient
 from tornado.httpclient import HTTPRequest, HTTPResponse
-from core.schedule import BaseScheduler, QueueScheduler
+from core.schedule import BaseScheduler
 from . import setting
 
 
 class BaseSpider(object):
     def __init__(self, scheduler: BaseScheduler = None):
-        self.scheduler = scheduler if scheduler else QueueScheduler()
+        self.scheduler = scheduler
+        self.concurrency = 0
 
-        self.before()
-        self.start()
+    def before(self):
+        for _ in range(setting.max_concurrency):
+            self.scheduler.put(HTTPRequest(url="http://blog.qiaohong.com/"))
 
     def start(self):
         http_client = httpclient.AsyncHTTPClient()
         while not self.scheduler.empty():
             request = self.scheduler.get()
             http_client.fetch(request, self.parse)
-
-    def before(self):
-        for _ in range(100000):
-            self.scheduler.put(HTTPRequest(url="http://www.baidu.com/"))
 
     @staticmethod
     def parse(response: HTTPResponse):

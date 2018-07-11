@@ -1,16 +1,13 @@
 from queue import Queue
 from tornado.httpclient import HTTPRequest
-
-
-class BaseScheduler(object):
-    def get(self):
-        pass
-
-    def put(self, request: HTTPRequest):
-        pass
+from .base import BaseScheduler
 
 
 class QueueScheduler(BaseScheduler):
+    """
+    In memory queue scheduler.
+    Be careful of memory run out.
+    """
     def __init__(self):
         self.queue = Queue()
 
@@ -25,6 +22,3 @@ class QueueScheduler(BaseScheduler):
 
     def empty(self):
         return self.queue.empty()
-
-    def should_close(self):
-        pass

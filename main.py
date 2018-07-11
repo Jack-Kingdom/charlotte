@@ -1,8 +1,8 @@
 from tornado.ioloop import IOLoop
-from core.basespider import BaseSpider
+from core.spider import BaseSpider
 
 try:
-    BaseSpider()
-    IOLoop.current().start()
+    spider = BaseSpider()
+    spider.run()
 except KeyboardInterrupt:
     IOLoop.current().stop()
