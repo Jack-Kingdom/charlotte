@@ -13,7 +13,8 @@ class BaseDownloader(object):
 
     def fetch(self, request: HTTPRequest, callback: Callable) -> bool:
         """
-        fetch page, and call callback
+        Fetch page, and call callback.
+        Return True is request start, else return False.
         :param request: HTTPRequest object
         :param callback: func with HTTPResponse object as arguments
         :return: boolean, start fetch current page or not.
