@@ -3,7 +3,6 @@ from typing import Callable
 from tornado.httpclient import HTTPRequest
 from core.downloader.base import BaseDownloader
 from core.scheduler.base import BaseScheduler
-from core.utils.call import call_increase, call_decrease
 
 
 class QueueScheduler(BaseScheduler):
@@ -17,7 +16,6 @@ class QueueScheduler(BaseScheduler):
         super(QueueScheduler, self).__init__(downloader,
                                              max_concurrency=max_concurrency)
         self.queue = Queue()
-        self.downloader.fetch = call_increase(self.concurrency)(self.downloader.fetch)
 
     def get(self):
         if not self.queue.empty():
