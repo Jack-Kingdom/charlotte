@@ -9,13 +9,13 @@ class BaseDownloader(object):
     """
 
     def __init__(self, scheduler: BaseScheduler = None):
-        self.concurrency = 0
+        self.scheduler = scheduler
 
-    def fetch(self, request: HTTPRequest, callback: Callable) -> None:
+    def fetch(self, request: HTTPRequest, callback: Callable) -> bool:
         """
-        fetch request and return response
-        :param request: HTTPRequest object that need to fetch
+        fetch page, and call callback
+        :param request: HTTPRequest object
         :param callback: func with HTTPResponse object as arguments
-        :return: None
+        :return: boolean, start fetch current page or not.
         """
         pass
