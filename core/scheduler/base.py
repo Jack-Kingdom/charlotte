@@ -22,7 +22,7 @@ class BaseScheduler(object):
             self.downloader.fetch = call_increase(self.concurrency)(self.downloader.fetch)
             setattr(self.downloader.fetch, flag_string, True)
 
-    def get(self) -> Tuple(HTTPRequest, Callable):
+    def get(self) -> Tuple[HTTPRequest, Callable]:
         """
         get request obj and callback func from scheduler
         :return: tuple of HTTPRequest and Callable func or None

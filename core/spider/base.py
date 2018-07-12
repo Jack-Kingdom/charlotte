@@ -38,12 +38,16 @@ class BaseSpider(object):
         """
 
         for item in self.start():
-            assert len(item) == 1 or len(item) == 2
-            assert isinstance(item[0], HTTPRequest)
-            req, cb = item if len(item) == 2 else item[0], self.parse
+            if isinstance(item, HTTPRequest):
+                req, cb = item, self.parse
+            elif isinstance(item, tuple):
+                assert isinstance(item[0], HTTPRequest) and isinstance(item[1], function)
+                req, cb = item
+            else:
+                raise TypeError('start func return type error')
             self.scheduler.put(req, cb)
 
-        loop = IOLoop.current()
+        loop = IOLoop.instance()
         try:
             loop.start()
         except KeyboardInterrupt:
