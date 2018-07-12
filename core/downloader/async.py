@@ -4,7 +4,7 @@ from tornado.httpclient import HTTPRequest
 from core.downloader.base import BaseDownloader
 
 
-class ParallelDownloader(BaseDownloader):
+class AsyncDownloader(BaseDownloader):
     """
     parallel downloader.
     """
