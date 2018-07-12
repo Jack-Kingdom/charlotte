@@ -27,8 +27,10 @@ class QueueScheduler(BaseScheduler):
 
     def put(self, request: HTTPRequest, callback: Callable):
 
+        super(QueueScheduler, self).put(request, callback)
+
         if self.concurrency < self.max_concurrency:
-            self.downloader.fetch(request, call_decrease(self.concurrency)(callback))
+            self.downloader.fetch(request, callback)
         else:
             self.queue.put_nowait((request, callback))
 

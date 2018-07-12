@@ -1,26 +1,8 @@
 import functools
-from typing import Callable
+from typing import Callable, Tuple
 from tornado.httpclient import HTTPRequest
 from core.downloader.base import BaseDownloader
 from core.utils.call import call_increase, call_decrease
-
-
-def cb_decrease(value):
-    """
-    decrease concurrency when put func's callback called.
-    :return: decorator
-    """
-
-    def wrapper(func):
-        @functools.wraps(func)
-        def inner_wrapper(obj: BaseScheduler, request: HTTPRequest, callback: Callable):
-            callback = call_decrease(value)(callback)
-
-            return func(obj, request, callback)
-
-        return inner_wrapper
-
-    return wrapper
 
 
 class BaseScheduler(object):
@@ -35,16 +17,18 @@ class BaseScheduler(object):
         self.concurrency = 0
 
         # increase concurrency when fetch func called
-        self.downloader.fetch = call_increase(self.concurrency)(self.downloader.fetch)
+        flag_string = 'cb_decrease_flag'
+        if not getattr(self.downloader.fetch, flag_string, False):
+            self.downloader.fetch = call_increase(self.concurrency)(self.downloader.fetch)
+            setattr(self.downloader.fetch, flag_string, True)
 
-    def get(self) -> HTTPRequest:
+    def get(self) -> Tuple(HTTPRequest, Callable):
         """
-        get request item from scheduler
-        :return: HTTPRequest Object or None
+        get request obj and callback func from scheduler
+        :return: tuple of HTTPRequest and Callable func or None
         """
         pass
 
-    @cb_decrease
     def put(self, request: HTTPRequest, callback: Callable) -> None:
         """
         put request item from scheduler
@@ -52,7 +36,16 @@ class BaseScheduler(object):
         :param callback: call back func
         :return: None
         """
-        pass
+        flag_string = 'cb_decrease_flag'
+        if not getattr(callback, flag_string, False):
+            callback = call_decrease(self.concurrency)(callback)
+            setattr(callback, flag_string, True)
+
+        while not self.empty() and self.concurrency < self.max_concurrency:
+            ret = self.get()
+            if ret:
+                req, cb = ret
+                self.downloader.fetch(req, cb)
 
     def empty(self) -> bool:
         """
