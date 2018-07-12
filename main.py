@@ -17,5 +17,5 @@ class MySpider(BaseSpider):
 
 
 if __name__ == '__main__':
-    spider = MySpider(QueueScheduler(AsyncDownloader(), max_concurrency=32))
+    spider = MySpider(QueueScheduler(AsyncDownloader()))
     spider.run()

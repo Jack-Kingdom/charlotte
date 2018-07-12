@@ -1,8 +1,9 @@
-import functools
+import time
 from typing import Callable, Tuple
 from tornado.httpclient import HTTPRequest
 from core.downloader.base import BaseDownloader
 from core.utils.call import call_increase, call_decrease
+from core import setting
 
 
 class BaseScheduler(object):
@@ -10,10 +11,9 @@ class BaseScheduler(object):
     Interface for Scheduler class
     """
 
-    def __init__(self, downloader: BaseDownloader,
-                 max_concurrency: int = 64):
+    def __init__(self, downloader: BaseDownloader):
         self.downloader = downloader
-        self.max_concurrency = max_concurrency
+        self.max_concurrency = setting.max_concurrency
         self.concurrency = 0
 
         # increase concurrency when fetch func called

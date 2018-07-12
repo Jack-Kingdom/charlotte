@@ -2,6 +2,7 @@ from typing import Callable
 from tornado import httpclient
 from tornado.httpclient import HTTPRequest
 from core.downloader.base import BaseDownloader
+from core import setting
 
 
 class AsyncDownloader(BaseDownloader):
@@ -10,7 +11,7 @@ class AsyncDownloader(BaseDownloader):
     """
 
     def __init__(self):
-        self.client = httpclient.AsyncHTTPClient()
+        self.client = httpclient.AsyncHTTPClient(max_clients=setting.max_concurrency)
 
     def fetch(self, request: HTTPRequest, callback: Callable) -> None:
         """

@@ -11,10 +11,8 @@ class QueueScheduler(BaseScheduler):
     Be careful of memory run out.
     """
 
-    def __init__(self, downloader: BaseDownloader,
-                 max_concurrency: int = 64):
-        super(QueueScheduler, self).__init__(downloader,
-                                             max_concurrency=max_concurrency)
+    def __init__(self, downloader: BaseDownloader):
+        super(QueueScheduler, self).__init__(downloader)
         self.queue = Queue()
 
     def get(self):
