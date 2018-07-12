@@ -8,9 +8,6 @@ class BaseDownloader(object):
     Interface for Downloader
     """
 
-    def __init__(self, scheduler: BaseScheduler = None):
-        self.scheduler = scheduler
-
     def fetch(self, request: HTTPRequest, callback: Callable) -> bool:
         """
         Fetch page, and call callback.
