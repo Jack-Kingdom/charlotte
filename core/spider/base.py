@@ -11,15 +11,13 @@ class BaseSpider(object):
     """
 
     def __init__(self,
-                 scheduler: BaseScheduler = None,
-                 downloader: BaseDownloader = None):
+                 scheduler: BaseScheduler = None):
         self.scheduler = scheduler
-        self.downloader = downloader
 
     def start(self) -> Generator:
         """
         Spider start function. Call once on spider start.
-        :return: a generator of HTTPRequest object
+        :return: a generator of tuple, HTTPRequest object and callback func
         """
         pass
 
@@ -30,3 +28,15 @@ class BaseSpider(object):
         :return:
         """
         pass
+
+    def run(self):
+        """
+        Spider run method
+        :return:
+        """
+
+        for item in self.start():
+            assert len(item) == 1 or len(item) == 2
+            assert isinstance(item[0], HTTPRequest)
+            req, cb = item if len(item) == 2 else item[0], self.parse
+            self.scheduler.put(req, cb)

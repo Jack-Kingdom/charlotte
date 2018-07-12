@@ -1,17 +1,13 @@
-from tornado.ioloop import IOLoop
 from tornado import httpclient
 from tornado.httpclient import HTTPRequest, HTTPResponse
-from .base import BaseSpider
+from core.scheduler.base import BaseScheduler
+from core.spider.base import BaseSpider
 
 
 class SimpleSpider(BaseSpider):
 
-    def __init__(self, scheduler: BaseScheduler = None,
-                 ):
-
-    def before(self):
-        for _ in range(setting.max_concurrency):
-            self.scheduler.put(HTTPRequest(url="http://blog.qiaohong.com/"))
+    def __init__(self, scheduler: BaseScheduler = None):
+        super(SimpleSpider, self).__init__(scheduler)
 
     def start(self):
         http_client = httpclient.AsyncHTTPClient()
@@ -19,9 +15,8 @@ class SimpleSpider(BaseSpider):
             request = self.scheduler.get()
             http_client.fetch(request, self.parse)
 
-    @staticmethod
-    def parse(response: HTTPResponse):
+    def parse(self, response: HTTPResponse):
         if response.error:
-            print("Error:", response.error)
+            yield ("Error:", response.error)
         else:
-            print("Body:", response.body)
+            yield ("Body:", response.body)
