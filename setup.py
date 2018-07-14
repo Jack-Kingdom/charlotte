@@ -1,11 +1,11 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name='portalutils',
-    packages=['portalutils'],
-    version='0.0.3',
+    name='hummer',
+    packages=find_packages(exclude=('tests', 'tests.*')),
+    version='0.0.1',
     url='https://github.com/Jack-Kingdom/portalutils.git',
-    description='Portal access utility.',
+    description='Lightweight and expandable spider framework.',
     long_description=open('README.md').read(),
 
     author='Jack King',
@@ -21,5 +21,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Natural Language :: English',
-    ], install_requires=['requests']
+    ], install_requires=[
+        'tornado'
+    ]
 )
