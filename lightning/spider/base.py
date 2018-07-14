@@ -1,7 +1,6 @@
 from typing import Generator
 from tornado.ioloop import IOLoop
-from core.scheduler.base import BaseScheduler
-from core.downloader.base import BaseDownloader
+from ..scheduler.base import BaseScheduler
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from .. import setting
 

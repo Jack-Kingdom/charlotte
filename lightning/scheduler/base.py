@@ -1,9 +1,9 @@
 import time
 from typing import Callable, Tuple
 from tornado.httpclient import HTTPRequest
-from core.downloader.base import BaseDownloader
-from core.utils.call import call_increase, call_decrease
-from core import setting
+from ..downloader.base import BaseDownloader
+from ..utils.call import call_increase, call_decrease
+from .. import setting
 
 
 class BaseScheduler(object):

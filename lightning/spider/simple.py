@@ -1,7 +1,7 @@
 from tornado import httpclient
 from tornado.httpclient import HTTPRequest, HTTPResponse
-from core.scheduler.base import BaseScheduler
-from core.spider.base import BaseSpider
+from ..scheduler.base import BaseScheduler
+from ..spider.base import BaseSpider
 
 
 class SimpleSpider(BaseSpider):

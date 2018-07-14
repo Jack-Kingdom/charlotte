@@ -1,8 +1,8 @@
 from typing import Callable
 from tornado import httpclient
 from tornado.httpclient import HTTPRequest
-from core.downloader.base import BaseDownloader
-from core import setting
+from ..downloader.base import BaseDownloader
+from .. import setting
 
 
 class AsyncDownloader(BaseDownloader):

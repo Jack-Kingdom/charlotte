@@ -1,8 +1,8 @@
 from queue import Queue
 from typing import Callable
 from tornado.httpclient import HTTPRequest
-from core.downloader.base import BaseDownloader
-from core.scheduler.base import BaseScheduler
+from ..downloader.base import BaseDownloader
+from ..scheduler.base import BaseScheduler
 
 
 class QueueScheduler(BaseScheduler):
