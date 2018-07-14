@@ -1,2 +1,2 @@
-from core.scheduler.base import BaseDownloader
-from core.scheduler.queue import QueueScheduler
+from .base import BaseDownloader
+from .queue import QueueScheduler
