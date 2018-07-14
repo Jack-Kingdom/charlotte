@@ -1,7 +1,7 @@
 from tornado.httpclient import HTTPRequest, HTTPResponse
-from core.spider import BaseSpider
-from core.scheduler import QueueScheduler
-from core.downloader import AsyncDownloader
+from lightning.spider import BaseSpider
+from lightning.scheduler import QueueScheduler
+from lightning.downloader import AsyncDownloader
 
 
 class MySpider(BaseSpider):
