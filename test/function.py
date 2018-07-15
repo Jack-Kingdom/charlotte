@@ -1,7 +1,7 @@
 from tornado.httpclient import HTTPRequest, HTTPResponse
-from hummer.spider import BaseSpider
-from hummer.scheduler import QueueScheduler
-from hummer.downloader import AsyncDownloader
+from charlotte.spider import BaseSpider
+from charlotte.scheduler import QueueScheduler
+from charlotte.downloader import AsyncDownloader
 
 
 class MySpider(BaseSpider):
