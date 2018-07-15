@@ -4,7 +4,7 @@ setup(
     name='hummer',
     packages=find_packages(exclude=('tests', 'tests.*')),
     version='0.0.1',
-    url='https://github.com/Jack-Kingdom/portalutils.git',
+    url='https://github.com/Jack-Kingdom/hummer',
     description='Lightweight and expandable spider framework.',
     long_description=open('README.md').read(),
 
