@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='hummer',
+    name='charlotte',
     packages=find_packages(exclude=('tests', 'tests.*')),
     version='0.0.1',
-    url='https://github.com/Jack-Kingdom/hummer',
+    url='https://github.com/Jack-Kingdom/charlotte',
     description='Lightweight and expandable spider framework.',
     long_description=open('README.md').read(),
 
