@@ -13,7 +13,7 @@ pip install charlotte
 ```
 
 ## Documentation
-Check [wiki](https://github.com/Jack-Kingdom/hummer/wiki) for details.
+Check [wiki](https://github.com/Jack-Kingdom/charlotte/wiki) for details.
 
 ## LICENSE
 MIT
