@@ -1,3 +1,4 @@
+import functools
 from typing import Callable
 from tornado import httpclient
 from tornado.httpclient import HTTPRequest
@@ -16,7 +17,23 @@ class AsyncDownloader(BaseDownloader):
         """
         fetch request and return response
         """
-        super(AsyncDownloader, self).fetch(request, callback)
+
+        for mw in self.request_middleware:
+            request = mw(request)
+            if not request:
+                return None
 
         response = await self.client.fetch(request)
-        self.handle(response, callback)
+
+        for mw in self.response_middleware:
+            response = mw(response)
+
+            if not request:
+                return None
+
+            # fetch again
+            if isinstance(response, HTTPRequest):
+                self.fetch(response, callback)
+                return None
+
+        callback(response)
