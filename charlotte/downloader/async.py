@@ -10,12 +10,13 @@ class AsyncDownloader(BaseDownloader):
     parallel downloader.
     """
 
-    def __init__(self):
-        self.client = httpclient.AsyncHTTPClient(max_clients=setting.max_concurrency)
+    client = httpclient.AsyncHTTPClient(max_clients=setting.max_concurrency)
 
-    def fetch(self, request: HTTPRequest, callback: Callable) -> None:
+    async def fetch(self, request: HTTPRequest, callback: Callable) -> None:
         """
         fetch request and return response
         """
+        super(AsyncDownloader, self).fetch(request, callback)
 
-        self.client.fetch(request, callback)
+        response = await self.client.fetch(request)
+        self.handle(response, callback)
