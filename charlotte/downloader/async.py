@@ -3,6 +3,7 @@ from typing import Callable
 from tornado import httpclient
 from tornado.httpclient import HTTPRequest
 from ..downloader.base import BaseDownloader
+from .middleware import retry
 from .. import setting
 
 
@@ -10,6 +11,8 @@ class AsyncDownloader(BaseDownloader):
     """
     parallel downloader.
     """
+
+    response_middleware = (retry,)
 
     client = httpclient.AsyncHTTPClient(max_clients=setting.max_concurrency)
 
