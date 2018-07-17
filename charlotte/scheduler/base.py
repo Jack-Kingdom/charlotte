@@ -1,7 +1,7 @@
 import logging
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from ..downloader.base import BaseDownloader
-from ..downloader.async import AsyncDownloader
+from ..downloader.parallel import ParallelDownloader
 from .. import setting
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ class BaseScheduler(object):
     """
 
     def __init__(self, downloader: BaseDownloader):
-        self.downloader = downloader if downloader else AsyncDownloader()
+        self.downloader = downloader if downloader else ParallelDownloader()
         self.max_concurrency = setting.max_concurrency
         self.concurrency = 0
 

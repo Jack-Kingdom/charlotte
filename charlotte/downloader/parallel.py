@@ -8,7 +8,7 @@ from .. import setting
 logger = logging.getLogger(__name__)
 
 
-class AsyncDownloader(BaseDownloader):
+class ParallelDownloader(BaseDownloader):
     """
     parallel downloader.
     """
