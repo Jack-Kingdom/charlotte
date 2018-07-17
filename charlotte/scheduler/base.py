@@ -63,7 +63,7 @@ class BaseScheduler(object):
 
             if retry_times < setting.max_retry:
                 logger.warning('page {0} fetch failed, err: {1}, retry... ({2}/{3})'
-                               .format(response.request.url, response.error, retry_times, setting.max_retry))
+                               .format(response.request.url, response.error, retry_times + 1, setting.max_retry))
                 setattr(response.request, 'retry_times', retry_times + 1)
                 self.put(response.request)
                 return None
