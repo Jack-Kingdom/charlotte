@@ -12,28 +12,34 @@ pip install charlotte
 ## Example
 
 ```python
+import json
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from charlotte.spider import BaseSpider
 from charlotte.scheduler import QueueScheduler
 
 
-class MySpider(BaseSpider):
+class BlogSpider(BaseSpider):
     scheduler = QueueScheduler()
 
-    counter = 0
-
     def start(self):
-        for _ in range(100):
-            yield HTTPRequest("https://blog.qiaohong.org")
+        yield HTTPRequest("https://blog.qiaohong.org/api/v1/articles")
 
     def parse(self, response: HTTPResponse):
-        self.counter += 1
-        print(self.counter, response.code, response.error)
+        lst = json.loads(response.body)
+
+        for item in lst:
+            request = HTTPRequest("https://blog.qiaohong.org/api/v1/articles" + "/" + item['slug'])
+            setattr(request, 'parser', self.parse_detail)
+
+            self.scheduler.put(request)
+
+    def parse_detail(self, response: HTTPResponse):
+        detail = json.loads(response.body)
+        print(detail)
 
 
 if __name__ == '__main__':
-    MySpider().run()
-
+    BlogSpider().run()
 ```
 
 ## Documentation
