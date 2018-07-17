@@ -9,7 +9,7 @@ class MySpider(BaseSpider):
     counter = 0
 
     def start(self):
-        for _ in range(1000):
+        for _ in range(100):
             yield HTTPRequest("https://blog.qiaohong.org")
 
     def parse(self, response: HTTPResponse):

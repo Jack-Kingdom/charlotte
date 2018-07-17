@@ -1,7 +1,15 @@
+import logging
+import asyncio
 from typing import Generator
-from tornado.ioloop import IOLoop
+import uvloop
+from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.httpclient import HTTPRequest, HTTPResponse
-from .. import setting
+
+# register uvloop for better performance
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+AsyncIOMainLoop().instance()
+
+logger = logging.getLogger(__name__)
 
 
 class BaseSpider(object):
@@ -26,6 +34,12 @@ class BaseSpider(object):
         """
         pass
 
+    async def is_over(self, feature: asyncio.Future):
+        while True:
+            await asyncio.sleep(0.1)
+            if self.scheduler.empty() and self.scheduler.concurrency == 0:
+                feature.set_result('Feature is done!')
+
     def run(self):
         """
         run spider
@@ -40,8 +54,14 @@ class BaseSpider(object):
 
             self.scheduler.put(request)
 
-        loop = IOLoop.current(instance=True)
+        # check finished or not
+        loop = asyncio.get_event_loop()
+        feature = asyncio.Future()
+        asyncio.ensure_future(self.is_over(feature))
         try:
-            loop.start()
+            loop.run_until_complete(feature)
         except KeyboardInterrupt:
-            loop.stop()
+            logger.error("received KeyboardInterrupt, spider execute interrupted.")
+            loop.close()
+        else:
+            logger.info("spider execute finished.")
