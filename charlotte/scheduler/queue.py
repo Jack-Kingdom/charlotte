@@ -10,7 +10,7 @@ class QueueScheduler(BaseScheduler):
     Be careful of memory run out.
     """
 
-    def __init__(self, downloader: BaseDownloader):
+    def __init__(self, downloader: BaseDownloader = None):
         super(QueueScheduler, self).__init__(downloader)
         self.queue = Queue()
 
@@ -25,7 +25,7 @@ class QueueScheduler(BaseScheduler):
         super(QueueScheduler, self).put(request)
 
         if self.concurrency < self.max_concurrency:
-            self.downloader.fetch(request)
+            self.fetch(request)
         else:
             self.queue.put_nowait(request)
 

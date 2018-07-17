@@ -37,8 +37,8 @@ class BaseSpider(object):
         for request in self.start():
             assert isinstance(request, HTTPRequest)
 
-            if not getattr(request, 'callback', None):
-                setattr(request, 'callback', self.parse)
+            if not getattr(request, 'parser', None):
+                setattr(request, 'parser', self.parse)
 
             self.scheduler.put(request)
 

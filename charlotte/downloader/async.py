@@ -1,7 +1,7 @@
 import logging
 import functools
 from tornado import httpclient
-from tornado.httpclient import HTTPRequest
+from tornado.httpclient import HTTPRequest, HTTPResponse
 from ..downloader.base import BaseDownloader
 from .. import setting
 
@@ -17,7 +17,7 @@ class AsyncDownloader(BaseDownloader):
 
     client = httpclient.AsyncHTTPClient(max_clients=setting.max_concurrency)
 
-    async def fetch(self, request: HTTPRequest) -> None:
+    def fetch(self, request: HTTPRequest) -> None:
         """
         fetch request and call callback with response
         """
@@ -29,21 +29,14 @@ class AsyncDownloader(BaseDownloader):
             logger.info('page {0} filtered.'.format(request.url))
             return None
 
-        response = await self.client.fetch(request)
+        self.client.fetch(request, self.handle)
 
-        # retry if fetch error
-        if response.code == 599:
-            retry_times = getattr(response.request, 'retry_times', 0)
-
-            if retry_times < setting.max_retry:
-                logger.warning(
-                    'page {0} fetch failed, reason: {1}, retry...'.format(response.request.url, response.reason))
-                setattr(response.request, 'retry_times', retry_times + 1)
-                self.fetch(response.request)
-                return None
-            else:
-                logger.error("page {0} fetch failed. max_retry times tried.".format(response.request.url))
-                return None
+    def handle(self, response: HTTPResponse):
+        """
+        handle response and middleware, call callback func
+        :param response: HTTPResponse object
+        :return: None
+        """
 
         response = functools.reduce(lambda item, func: None if not item else func(item),
                                     (response, *reversed(self.middleware)))

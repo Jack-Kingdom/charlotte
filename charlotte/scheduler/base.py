@@ -1,9 +1,10 @@
-import time
-from typing import Callable, Tuple
-from tornado.httpclient import HTTPRequest
+import logging
+from tornado.httpclient import HTTPRequest, HTTPResponse
 from ..downloader.base import BaseDownloader
-from ..utils.call import call_increase, call_decrease
+from ..downloader.async import AsyncDownloader
 from .. import setting
+
+logger = logging.getLogger(__name__)
 
 
 class BaseScheduler(object):
@@ -12,15 +13,17 @@ class BaseScheduler(object):
     """
 
     def __init__(self, downloader: BaseDownloader):
-        self.downloader = downloader
+        self.downloader = downloader if downloader else AsyncDownloader()
         self.max_concurrency = setting.max_concurrency
         self.concurrency = 0
 
-        # increase concurrency when fetch func called
-        flag_string = 'cb_increase_flag'
-        if not getattr(self.downloader.fetch, flag_string, False):
-            self.downloader.fetch = call_increase(self.concurrency)(self.downloader.fetch)
-            setattr(self.downloader.fetch, flag_string, True)
+    def put(self, request: HTTPRequest) -> None:
+        """
+        put request item from scheduler
+        :param request: HTTPRequest object
+        :return: None
+        """
+        pass
 
     def get(self) -> HTTPRequest:
         """
@@ -29,19 +32,47 @@ class BaseScheduler(object):
         """
         pass
 
-    def put(self, request: HTTPRequest) -> None:
+    def fetch(self, request: HTTPRequest):
         """
-        put request item from scheduler
-        :param request:
+        wrapper for downloader's fetch method.
+        :param request: HTTPRequest object.
         :return: None
         """
-        flag_string = 'cb_decrease_flag'
-        if not getattr(getattr(request, 'callback'), flag_string, False):
-            callback = call_decrease(self.concurrency)(getattr(request, 'callback'))
-            setattr(callback, flag_string, True)
 
+        self.concurrency += 1
+
+        setattr(request, 'callback', self.handle)
+        self.downloader.fetch(request)
+
+    def handle(self, response: HTTPResponse):
+        """
+        wrapper for downloader's handle method.
+        :param response: HTTPResponse object
+        :return: None
+        """
+
+        self.concurrency -= 1
+
+        # try maximize downloader's concurrency
         while not self.empty() and self.concurrency < self.max_concurrency:
-            self.downloader.fetch(self.get())
+            self.fetch(self.get())
+
+        # retry if fetch error
+        if response.code == 599:
+            retry_times = getattr(response.request, 'retry_times', 0)
+
+            if retry_times < setting.max_retry:
+                logger.warning('page {0} fetch failed, err: {1}, retry... ({2}/{3})'
+                               .format(response.request.url, response.error, retry_times, setting.max_retry))
+                setattr(response.request, 'retry_times', retry_times + 1)
+                self.put(response.request)
+                return None
+            else:
+                logger.error("page {0} fetch failed. max_retry times tried.".format(response.request.url))
+                return None
+
+        parser = getattr(response.request, 'parser')
+        parser(response)
 
     def empty(self) -> bool:
         """
