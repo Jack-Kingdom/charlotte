@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='charlotte',
     packages=find_packages(exclude=('tests', 'tests.*')),
-    version='0.0.1',
+    version='0.0.2',
     url='https://github.com/Jack-Kingdom/charlotte',
     description='Lightweight and expandable spider framework.',
     long_description=open('README.md').read(),
