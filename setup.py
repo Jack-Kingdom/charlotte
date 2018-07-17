@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='charlotte',
     packages=find_packages(exclude=('test', 'tests.*')),
-    version='0.0.4',
+    version='0.0.5',
     url='https://github.com/Jack-Kingdom/charlotte',
     description='Lightweight and expandable spider framework.',
     long_description=open('README.md').read(),
@@ -22,6 +22,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Natural Language :: English',
     ], install_requires=[
-        'tornado'
+        'tornado',
+        'uvloop'
     ]
 )
