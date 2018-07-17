@@ -1,6 +1,5 @@
 from typing import Generator
 from tornado.ioloop import IOLoop
-from ..scheduler.base import BaseScheduler
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from .. import setting
 
@@ -10,7 +9,6 @@ class BaseSpider(object):
     Interface for spider.
     """
 
-    downloader = None
     scheduler = None
 
     def start(self) -> Generator:
@@ -42,7 +40,7 @@ class BaseSpider(object):
 
             self.scheduler.put(request)
 
-        loop = IOLoop.instance()
+        loop = IOLoop.current(instance=True)
         try:
             loop.start()
         except KeyboardInterrupt:

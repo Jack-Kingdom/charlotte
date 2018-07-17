@@ -71,6 +71,7 @@ class BaseScheduler(object):
                 logger.error("page {0} fetch failed. max_retry times tried.".format(response.request.url))
                 return None
 
+        logger.info('page {0} fetch success.'.format(response.request.url))
         parser = getattr(response.request, 'parser')
         parser(response)
 
