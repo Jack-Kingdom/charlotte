@@ -17,35 +17,31 @@ class BaseScheduler(object):
         self.concurrency = 0
 
         # increase concurrency when fetch func called
-        flag_string = 'cb_decrease_flag'
+        flag_string = 'cb_increase_flag'
         if not getattr(self.downloader.fetch, flag_string, False):
             self.downloader.fetch = call_increase(self.concurrency)(self.downloader.fetch)
             setattr(self.downloader.fetch, flag_string, True)
 
-    def get(self) -> Tuple[HTTPRequest, Callable]:
+    def get(self) -> HTTPRequest:
         """
         get request obj and callback func from scheduler
-        :return: tuple of HTTPRequest and Callable func or None
+        :return: HTTPRequest object
         """
         pass
 
-    def put(self, request: HTTPRequest, callback: Callable) -> None:
+    def put(self, request: HTTPRequest) -> None:
         """
         put request item from scheduler
         :param request:
-        :param callback: call back func
         :return: None
         """
         flag_string = 'cb_decrease_flag'
-        if not getattr(callback, flag_string, False):
-            callback = call_decrease(self.concurrency)(callback)
+        if not getattr(getattr(request, 'callback'), flag_string, False):
+            callback = call_decrease(self.concurrency)(getattr(request, 'callback'))
             setattr(callback, flag_string, True)
 
         while not self.empty() and self.concurrency < self.max_concurrency:
-            ret = self.get()
-            if ret:
-                req, cb = ret
-                self.downloader.fetch(req, cb)
+            self.downloader.fetch(self.get())
 
     def empty(self) -> bool:
         """

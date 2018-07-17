@@ -1,10 +1,11 @@
+import logging
 import functools
-from typing import Callable
 from tornado import httpclient
 from tornado.httpclient import HTTPRequest
 from ..downloader.base import BaseDownloader
-from .middleware import retry
 from .. import setting
+
+logger = logging.getLogger(__name__)
 
 
 class AsyncDownloader(BaseDownloader):
@@ -12,31 +13,40 @@ class AsyncDownloader(BaseDownloader):
     parallel downloader.
     """
 
-    response_middleware = (retry,)
+    middleware = ()
 
     client = httpclient.AsyncHTTPClient(max_clients=setting.max_concurrency)
 
-    async def fetch(self, request: HTTPRequest, callback: Callable) -> None:
+    async def fetch(self, request: HTTPRequest) -> None:
         """
-        fetch request and return response
+        fetch request and call callback with response
         """
 
-        for mw in self.request_middleware:
-            request = mw(request)
-            if not request:
-                return None
+        request = functools.reduce(lambda item, func: None if not item else func(item),
+                                   (request, *self.middleware))
+
+        if not request:
+            logger.info('page {0} filtered.'.format(request.url))
+            return None
 
         response = await self.client.fetch(request)
 
-        for mw in self.response_middleware:
-            response = mw(response)
+        # retry if fetch error
+        if response.code == 599:
+            retry_times = getattr(response.request, 'retry_times', 0)
 
-            if not request:
+            if retry_times < setting.max_retry:
+                logger.warning(
+                    'page {0} fetch failed, reason: {1}, retry...'.format(response.request.url, response.reason))
+                setattr(response.request, 'retry_times', retry_times + 1)
+                self.fetch(response.request)
+                return None
+            else:
+                logger.error("page {0} fetch failed. max_retry times tried.".format(response.request.url))
                 return None
 
-            # fetch again
-            if isinstance(response, HTTPRequest):
-                self.fetch(response, callback)
-                return None
+        response = functools.reduce(lambda item, func: None if not item else func(item),
+                                    (response, *reversed(self.middleware)))
 
+        callback = getattr(response.request, 'callback')
         callback(response)

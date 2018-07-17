@@ -1,5 +1,4 @@
 from queue import Queue
-from typing import Callable
 from tornado.httpclient import HTTPRequest
 from ..downloader.base import BaseDownloader
 from ..scheduler.base import BaseScheduler
@@ -21,14 +20,14 @@ class QueueScheduler(BaseScheduler):
         else:
             return None
 
-    def put(self, request: HTTPRequest, callback: Callable):
+    def put(self, request: HTTPRequest):
 
-        super(QueueScheduler, self).put(request, callback)
+        super(QueueScheduler, self).put(request)
 
         if self.concurrency < self.max_concurrency:
-            self.downloader.fetch(request, callback)
+            self.downloader.fetch(request)
         else:
-            self.queue.put_nowait((request, callback))
+            self.queue.put_nowait(request)
 
     def empty(self):
         return self.queue.empty()

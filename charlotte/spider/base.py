@@ -10,9 +10,8 @@ class BaseSpider(object):
     Interface for spider.
     """
 
-    def __init__(self,
-                 scheduler: BaseScheduler = None):
-        self.scheduler = scheduler
+    downloader = None
+    scheduler = None
 
     def start(self) -> Generator:
         """
@@ -24,7 +23,6 @@ class BaseSpider(object):
     def parse(self, response: HTTPResponse) -> Generator:
         """
         Default parse function.
-        todo: how to handle this function's request objects
         :param response:
         :return:
         """
@@ -36,15 +34,13 @@ class BaseSpider(object):
         :return: None
         """
 
-        for item in self.start():
-            if isinstance(item, HTTPRequest):
-                req, cb = item, self.parse
-            elif isinstance(item, tuple):
-                assert isinstance(item[0], HTTPRequest) and isinstance(item[1], function)
-                req, cb = item
-            else:
-                raise TypeError('start func return type error')
-            self.scheduler.put(req, cb)
+        for request in self.start():
+            assert isinstance(request, HTTPRequest)
+
+            if not getattr(request, 'callback', None):
+                setattr(request, 'callback', self.parse)
+
+            self.scheduler.put(request)
 
         loop = IOLoop.instance()
         try:
