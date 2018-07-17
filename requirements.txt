@@ -1,1 +1,2 @@
 tornado==5.1
+uvloop==0.11.0
