@@ -22,8 +22,6 @@ class QueueScheduler(BaseScheduler):
 
     def put(self, request: HTTPRequest):
 
-        super(QueueScheduler, self).put(request)
-
         if self.concurrency < self.max_concurrency:
             self.fetch(request)
         else:
