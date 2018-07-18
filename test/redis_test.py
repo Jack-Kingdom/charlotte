@@ -7,6 +7,7 @@ counter = 0
 
 
 class MySpider(BaseSpider):
+
     scheduler = RedisScheduler(redis=Redis(host='localhost', port=6379))
 
     def start(self):
