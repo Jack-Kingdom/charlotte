@@ -12,8 +12,15 @@ class BaseScheduler(object):
     Interface for Scheduler class
     """
 
-    def __init__(self, downloader: BaseDownloader):
+    middleware = ()
+
+    def __init__(self,
+                 downloader: BaseDownloader = None,
+                 middleware: tuple = None):
+
         self.downloader = downloader if downloader else ParallelDownloader()
+        self.middleware = middleware if middleware else ()
+
         self.max_concurrency = setting.max_concurrency
         self.concurrency = 0
 
