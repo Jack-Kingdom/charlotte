@@ -1,4 +1,3 @@
-from tornado.httpclient import HTTPRequest, HTTPResponse
 from charlotte.spider import BaseSpider
 
 
@@ -7,9 +6,9 @@ class MySpider(BaseSpider):
 
     def start(self):
         for _ in range(100):
-            yield HTTPRequest("https://blog.qiaohong.org")
+            yield "https://blog.qiaohong.org"
 
-    def parse(self, response: HTTPResponse):
+    def parse(self, response):
         self.counter += 1
         print(self.counter, response.code, response.error)
 

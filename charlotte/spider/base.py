@@ -42,8 +42,9 @@ class BaseSpider(object):
         :return: None
         """
 
-        for request in self.start():
-            assert isinstance(request, HTTPRequest)
+        for item in self.start():
+            # wrap item to HTTPRequest object
+            request = item if isinstance(item, HTTPRequest) else HTTPRequest(url=item)
 
             if not getattr(request, 'parser', None):
                 setattr(request, 'parser', self.parse)
