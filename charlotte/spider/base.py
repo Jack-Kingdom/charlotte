@@ -1,13 +1,8 @@
 import logging
 import asyncio
 from typing import Generator
-import uvloop
-from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.httpclient import HTTPRequest, HTTPResponse
-
-# register uvloop for better performance
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-AsyncIOMainLoop().instance()
+from ..scheduler import QueueScheduler
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +12,8 @@ class BaseSpider(object):
     Interface for spider.
     """
 
-    scheduler = None
+    # set QueueScheduler as default
+    scheduler = QueueScheduler()
 
     def start(self) -> Generator:
         """

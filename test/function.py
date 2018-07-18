@@ -1,11 +1,8 @@
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from charlotte.spider import BaseSpider
-from charlotte.scheduler import QueueScheduler
 
 
 class MySpider(BaseSpider):
-    scheduler = QueueScheduler()
-
     counter = 0
 
     def start(self):
