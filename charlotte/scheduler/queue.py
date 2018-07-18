@@ -15,7 +15,7 @@ class QueueScheduler(BaseScheduler):
         self.queue = Queue()
 
     def get(self):
-        if not self.queue.empty():
+        if not self.empty():
             return self.queue.get_nowait()
         else:
             return None
