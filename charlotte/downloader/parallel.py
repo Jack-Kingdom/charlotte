@@ -22,12 +22,7 @@ class ParallelDownloader(BaseDownloader):
         fetch request and call callback with response
         """
 
-        request = functools.reduce(lambda item, func: None if not item else func(item),
-                                   (request, *self.middleware))
-
-        if not request:
-            logger.info('page {0} filtered.'.format(request.url))
-            return None
+        request = functools.reduce(lambda item, func: func(item), (request, *self.middleware))
 
         self.client.fetch(request, self.handle)
 
@@ -38,8 +33,7 @@ class ParallelDownloader(BaseDownloader):
         :return: None
         """
 
-        response = functools.reduce(lambda item, func: None if not item else func(item),
-                                    (response, *reversed(self.middleware)))
+        response = functools.reduce(lambda item, func: func(item), (response, *reversed(self.middleware)))
 
         callback = getattr(response.request, 'callback')
         callback(response)
