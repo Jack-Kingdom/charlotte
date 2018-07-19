@@ -7,8 +7,8 @@ from .base import BaseScheduler
 
 class RedisScheduler(BaseScheduler):
     """
-    In memory queue scheduler.
-    Be careful of memory run out.
+    redis scheduler.
+    todo ensure request handle finished.
     """
 
     def __init__(self,

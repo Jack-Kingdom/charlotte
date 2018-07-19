@@ -1,4 +1,5 @@
 import logging
+import functools
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from ..downloader.base import BaseDownloader
 from ..downloader.parallel import ParallelDownloader
@@ -46,8 +47,13 @@ class BaseScheduler(object):
         :return: None
         """
 
-        self.concurrency += 1
+        # load middleware
+        request = functools.reduce(lambda item, func: None if not item else func(item), (request, *self.middleware))
+        if not request:
+            logger.info('request {0} filtered by middleware.'.format(request.url))
+            return None
 
+        self.concurrency += 1
         setattr(request, 'callback', self.handle)
         self.downloader.fetch(request)
 
@@ -59,6 +65,11 @@ class BaseScheduler(object):
         """
 
         self.concurrency -= 1
+
+        response = functools.reduce(lambda item, func: None if not item else func(item),
+                                    (response, reversed(*self.middleware)))
+        if not response:
+            logger.info('response {0} filtered by middleware.')
 
         # try maximize downloader's concurrency
         while not self.empty() and self.concurrency < self.max_concurrency:
