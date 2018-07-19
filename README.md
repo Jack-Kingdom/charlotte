@@ -15,16 +15,14 @@ pip install charlotte
 import json
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from charlotte.spider import BaseSpider
-from charlotte.scheduler import QueueScheduler
 
 
 class BlogSpider(BaseSpider):
-    scheduler = QueueScheduler()
 
     def start(self):
-        yield HTTPRequest("https://blog.qiaohong.org/api/v1/articles")
+        yield "https://blog.qiaohong.org/api/v1/articles"
 
-    def parse(self, response: HTTPResponse):
+    def parse(self, response):
         lst = json.loads(response.body)
 
         for item in lst:
