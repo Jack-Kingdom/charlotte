@@ -1,4 +1,10 @@
+import sys
+import logging
 from charlotte.spider import BaseSpider
+
+logger = logging.getLogger()
+logger.setLevel('DEBUG')
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
 class MySpider(BaseSpider):
