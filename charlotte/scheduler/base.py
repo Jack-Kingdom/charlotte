@@ -13,8 +13,6 @@ class BaseScheduler(object):
     Interface for Scheduler class
     """
 
-    middleware = ()
-
     def __init__(self,
                  downloader: BaseDownloader = None,
                  middleware: tuple = None):
@@ -48,9 +46,11 @@ class BaseScheduler(object):
         """
 
         # load middleware
-        request = functools.reduce(lambda item, func: None if not item else func(item), (request, *self.middleware))
+        url = request.url
+        request = functools.reduce(lambda req, mw: None if not req else mw.handle_req(req),
+                                   (request, *self.middleware))
         if not request:
-            logger.info('request {0} filtered by middleware.'.format(request.url))
+            logger.info('request {0} filtered by middleware.'.format(url))
             return None
 
         self.concurrency += 1
@@ -66,10 +66,12 @@ class BaseScheduler(object):
 
         self.concurrency -= 1
 
-        response = functools.reduce(lambda item, func: None if not item else func(item),
-                                    (response, reversed(*self.middleware)))
+        # load middleware
+        url = response.request.url
+        response = functools.reduce(lambda item, mw: None if not item else mw.handle_res(item),
+                                    (response, *reversed(self.middleware)))
         if not response:
-            logger.info('response {0} filtered by middleware.')
+            logger.info('response {0} filtered by middleware.'.format(url))
 
         # try maximize downloader's concurrency
         while not self.empty() and self.concurrency < self.max_concurrency:
