@@ -1,12 +1,17 @@
+import sys
+import logging
 from redis import Redis
 from charlotte.spider import BaseSpider
 from charlotte.scheduler import RedisScheduler
+
+logger = logging.getLogger()
+logger.setLevel('DEBUG')
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 counter = 0
 
 
 class MySpider(BaseSpider):
-
     scheduler = RedisScheduler(redis=Redis(host='localhost', port=6379))
 
     def start(self):
