@@ -10,8 +10,10 @@ class QueueScheduler(BaseScheduler):
     Be careful of memory run out.
     """
 
-    def __init__(self, downloader: BaseDownloader = None):
-        super(QueueScheduler, self).__init__(downloader)
+    def __init__(self,
+                 downloader: BaseDownloader = None,
+                 middleware: tuple = None):
+        super(QueueScheduler, self).__init__(downloader, middleware)
         self.queue = Queue()
 
     def get(self):

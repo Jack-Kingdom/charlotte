@@ -13,8 +13,9 @@ class RedisScheduler(BaseScheduler):
 
     def __init__(self,
                  redis: Redis = None,
-                 downloader: BaseDownloader = None):
-        super(RedisScheduler, self).__init__(downloader)
+                 downloader: BaseDownloader = None,
+                 middleware: tuple = None):
+        super(RedisScheduler, self).__init__(downloader, middleware)
         self.redis = redis
 
     def get(self):

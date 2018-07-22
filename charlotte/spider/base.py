@@ -58,7 +58,7 @@ class BaseSpider(object):
         try:
             loop.run_until_complete(feature)
         except KeyboardInterrupt:
+            loop.stop()
             logger.error("received KeyboardInterrupt, spider execute interrupted.")
-            loop.close()
         else:
             logger.info("spider execute finished.")
