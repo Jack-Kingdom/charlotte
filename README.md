@@ -26,10 +26,8 @@ class BlogSpider(BaseSpider):
         lst = json.loads(response.body)
 
         for item in lst:
-            request = HTTPRequest("https://blog.qiaohong.org/api/v1/articles" + "/" + item['slug'])
-            setattr(request, 'parser', self.parse_detail)
-
-            self.scheduler.put(request)
+            detail_uri = "https://blog.qiaohong.org/api/v1/articles" + "/" + item['slug']
+            self.fetch(detail_uri, parser=self.parse_detail)
 
     def parse_detail(self, response: HTTPResponse):
         detail = json.loads(response.body)
@@ -38,6 +36,7 @@ class BlogSpider(BaseSpider):
 
 if __name__ == '__main__':
     BlogSpider().run()
+
 ```
 
 ## Documentation
