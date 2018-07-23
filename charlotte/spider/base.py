@@ -50,7 +50,10 @@ class BaseSpider(object):
         # flag request with spider name
         setattr(request, 'name', getattr(self, 'name'))
 
-        # if no appointed parser, self.parse func as default.
+        # appoint parser
+        # if none, set self.parse func as default.
+        if parser:
+            setattr(request, 'parser', parser)
         if not getattr(request, 'parser', None):
             setattr(request, 'parser', self.parse)
 
