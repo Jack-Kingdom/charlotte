@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from typing import Generator
+from typing import Generator, Callable, Union
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from ..scheduler import QueueScheduler
 
@@ -36,20 +36,44 @@ class BaseSpider(object):
             if self.scheduler.empty() and self.scheduler.concurrency == 0:
                 feature.set_result('Feature is done!')
 
+    def fetch(self, req: Union[str, HTTPRequest], parser: Callable = None) -> None:
+        """
+        wrap request url or HTTPRequest objects with some additional attr
+        :param req: request url or HTTPRequest objects
+        :param parser: optional arguments, parse func
+        :return: None
+        """
+
+        # wrap item to HTTPRequest object
+        request = req if isinstance(req, HTTPRequest) else HTTPRequest(url=req)
+
+        # flag request with spider name
+        setattr(request, 'name', getattr(self, 'name'))
+
+        # if no appointed parser, self.parse func as default.
+        if not getattr(request, 'parser', None):
+            setattr(request, 'parser', self.parse)
+
+        self.scheduler.put(request)
+
     def run(self):
         """
         run spider
         :return: None
         """
 
+        # get spider name, use class name instead if none
+        name = getattr(self, 'name', None)
+        if not name:
+            name = str(self).replace('<', '').split(' ')[0]
+            setattr(self, 'name', name)
+
+        # flag scheduler belong to what spider
+        setattr(self.scheduler, 'name', name)
+
+        # handle start func generated request
         for item in self.start():
-            # wrap item to HTTPRequest object
-            request = item if isinstance(item, HTTPRequest) else HTTPRequest(url=item)
-
-            if not getattr(request, 'parser', None):
-                setattr(request, 'parser', self.parse)
-
-            self.scheduler.put(request)
+            self.fetch(item)
 
         # check finished or not
         loop = asyncio.get_event_loop()
