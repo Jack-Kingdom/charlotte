@@ -1,10 +1,15 @@
+"""
+this file implement some dns utils
+
+todo optimize this by async dns query
+"""
+
 import socket
 
 
 def fetch_dns(hostname) -> str:
     """
     blocking method for dns query
-    todo optimize it by async
     :param hostname: domain that need queried
     :return: ip string
     """
