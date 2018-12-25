@@ -2,7 +2,18 @@
 some helper method in this file
 """
 
-from charlotte.core.http import HTTPResponse
+from urllib.parse import urlparse
+from charlotte.core.http import HTTPRequest, HTTPResponse
+
+
+def url2request(url: str) -> HTTPRequest:
+    """
+    from url parse a basic HTTPRequest object
+    :return:
+    """
+
+    rst = urlparse(url)
+    return HTTPRequest(protocol=rst.scheme, method="GET", uri=rst.path, host=rst.netloc.split(':')[0])
 
 
 def parse_binary_response(binary: bytes, response: HTTPResponse) -> HTTPResponse:
