@@ -15,7 +15,7 @@ class ParallelDownloader(BaseDownloader):
 
     middleware = ()
 
-    client = httpclient.AsyncHTTPClient(max_clients=setting.max_concurrency)
+    client = httpclient.AsyncHTTPClient(max_clients=setting.default_max_concurrency)
 
     def fetch(self, request: HTTPRequest) -> None:
         """

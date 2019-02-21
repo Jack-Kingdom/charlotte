@@ -33,7 +33,7 @@ class BaseSpider(object):
     async def is_over(self, feature: asyncio.Future):
         while True:
             await asyncio.sleep(0.1)
-            if self.scheduler.empty() and self.scheduler.concurrency == 0:
+            if self.scheduler.empty() and self.scheduler._concurrency == 0:
                 feature.set_result('Feature is done!')
 
     def fetch(self, req: Union[str, HTTPRequest], parser: Callable = None) -> None:

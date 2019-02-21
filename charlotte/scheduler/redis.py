@@ -73,7 +73,7 @@ class RedisScheduler(BaseScheduler):
         name = getattr(self, 'name')
         queue = '{0}-queue'.format(name)
 
-        if self.concurrency < self.max_concurrency:
+        if self._concurrency < self.max_concurrency:
             self.fetch(request)
         else:
             self.redis.lpush(queue, dumps(request))

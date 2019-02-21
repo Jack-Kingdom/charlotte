@@ -51,5 +51,3 @@ class HTTPResponse(object):
         self.reason = reason
         self.headers = headers
         self.body = body
-
-
