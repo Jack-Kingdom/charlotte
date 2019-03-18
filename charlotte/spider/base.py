@@ -76,7 +76,7 @@ class BaseSpider(object):
 
         # handle start func generated request
         for item in self.start():
-            self.fetch(item)
+            self.fetch(item)    # todo optimize this part, next generator util need
 
         # check finished or not
         loop = asyncio.get_event_loop()
