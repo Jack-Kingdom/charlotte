@@ -1,20 +1,9 @@
 import logging
-import hashlib
-from tornado.httpclient import HTTPRequest, HTTPResponse
+from charlotte.core.helper import str2hash
+from charlotte.core.http import HTTPRequest, HTTPResponse
 from .base import BaseMiddleWare
 
 logger = logging.getLogger(__name__)
-
-
-def to_hash(url: str) -> str:
-    """
-    hash url
-    :param url: url string
-    :return: hex digest
-    """
-    url = url.encode('utf-8')
-
-    return hashlib.sha256(url).hexdigest()
 
 
 class URLSetFilter(BaseMiddleWare):
@@ -27,21 +16,21 @@ class URLSetFilter(BaseMiddleWare):
 
     def handle_req(self, request: HTTPRequest):
 
-        digest = to_hash(request.url)
+        digest = str2hash(request.uri)
 
         if digest in self.set:
-            logger.debug('page {0} in set, filtered.'.format(request.url))
+            logger.debug('page {0} in set, filtered.'.format(request.uri))
             return None
         else:
-            logger.debug('page {0} add to set.'.format(request.url))
+            logger.debug('page {0} add to set.'.format(request.uri))
             self.set.add(digest)
             return request
 
     def handle_res(self, response: HTTPResponse):
 
-        digest = to_hash(response.request.url)
+        digest = str2hash(response.request.uri)
 
-        if response.code == 599:
+        if response.status_code == 599:    # todo, redesign this status code
             logger.debug('page {0} fetch error, remove from set.'.format(response.request.url))
             self.set.remove(digest)
         return response

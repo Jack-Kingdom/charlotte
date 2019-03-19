@@ -1,3 +1,7 @@
+"""
+cache http page & request progress in disk
+"""
+
 import logging
 from tornado.httpclient import HTTPRequest, HTTPResponse
 from .base import BaseMiddleWare

@@ -2,6 +2,7 @@
 some helper method in this file
 """
 
+import hashlib
 from urllib.parse import urlparse
 from charlotte.core.http import HTTPRequest, HTTPResponse
 
@@ -37,3 +38,14 @@ def parse_binary_response(binary: bytes, response: HTTPResponse) -> HTTPResponse
 
     response.headers, response.body = headers, raw_body
     return response
+
+
+def str2hash(origin: str):
+    """
+    generate hash for current str
+    :param origin: original str
+    :return: hash string
+    """
+    url = origin.encode('utf-8')
+
+    return hashlib.sha256(url).hexdigest()

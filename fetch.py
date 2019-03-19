@@ -14,7 +14,7 @@ async def handle():
         print(response.status_code, response.headers, response.body)
 
 
-feature = asyncio.wait([handle() for _ in range(1)])
+feature = asyncio.wait([handle() for _ in range(100)])
 
 try:
     default_loop.run_until_complete(feature)

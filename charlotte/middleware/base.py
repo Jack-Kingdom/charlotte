@@ -1,5 +1,5 @@
 from typing import Union
-from tornado.httpclient import HTTPRequest, HTTPResponse
+from charlotte.core.http import HTTPRequest, HTTPResponse
 
 
 class BaseMiddleWare(object):
