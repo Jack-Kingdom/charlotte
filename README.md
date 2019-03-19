@@ -13,29 +13,29 @@ pip install charlotte
 
 ```python
 import json
-from tornado.httpclient import HTTPRequest, HTTPResponse
+import asyncio
 from charlotte.spider import BaseSpider
 
 
-class BlogSpider(BaseSpider):
+class Spider(BaseSpider):
 
-    def start(self):
-        yield "https://blog.qiaohong.org/api/v1/articles"
+    async def on_start(self):
+        response = await self.fetch('https://blog.qiaohong.org/api/v1/articles?limit=999')
+        items = json.loads(response.body)
 
-    def parse(self, response):
-        lst = json.loads(response.body)
+        print(len(items))
 
-        for item in lst:
-            detail_uri = "https://blog.qiaohong.org/api/v1/articles" + "/" + item['slug']
-            self.fetch(detail_uri, parser=self.parse_detail)
+        await asyncio.wait(
+            [self.fetch('https://blog.qiaohong.org/api/v1/articles/' + item['slug'],
+                        parser=self.parse_detail) for item in items])
 
-    def parse_detail(self, response: HTTPResponse):
-        detail = json.loads(response.body)
-        print(detail)
+    def parse_detail(self, res):
+        print(res.body)
 
 
 if __name__ == '__main__':
-    BlogSpider().run()
+    Spider().run()
+
 
 ```
 

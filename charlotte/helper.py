@@ -4,7 +4,7 @@ some helper method in this file
 
 import hashlib
 from urllib.parse import urlparse
-from charlotte.core.http import HTTPRequest, HTTPResponse
+from charlotte.http import HTTPRequest, HTTPResponse
 
 
 def url2request(url: str) -> HTTPRequest:
@@ -14,7 +14,9 @@ def url2request(url: str) -> HTTPRequest:
     """
 
     rst = urlparse(url)
-    return HTTPRequest(protocol=rst.scheme, method="GET", uri=rst.path, host=rst.netloc.split(':')[0])
+    return HTTPRequest(protocol=rst.scheme, method="GET",
+                       uri=rst.path + '?' + rst.query if rst.query else rst.path,
+                       host=rst.netloc.split(':')[0])
 
 
 def parse_binary_response(binary: bytes, response: HTTPResponse) -> HTTPResponse:

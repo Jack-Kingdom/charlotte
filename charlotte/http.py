@@ -1,4 +1,4 @@
-from charlotte.core.dns import get_cached_dns
+from charlotte.dns import get_cached_dns
 
 
 class HTTPRequest(object):
@@ -38,8 +38,15 @@ class HTTPRequest(object):
             self._server_ip = get_cached_dns(self.host)
         return self._server_ip
 
+    @property
+    def url(self):
+        return self.protocol + '://' + self.host + self.uri
+
     def set_server_ip(self, address: str) -> None:
         self._server_ip = address
+
+    def __str__(self):
+        return '<HTTPRequest Object - {0}'.format(self.url)
 
 
 class HTTPResponse(object):
@@ -51,3 +58,6 @@ class HTTPResponse(object):
         self.reason = reason
         self.headers = headers
         self.body = body
+
+    def __str__(self):
+        return 'HTTPResponse Object - {0}'.format(self.request.url)

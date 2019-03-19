@@ -1,10 +1,9 @@
 import asyncio
-from charlotte.core.loop import default_loop
-from charlotte.core.http import HTTPRequest, HTTPResponse
-from charlotte.core.helper import parse_binary_response
+from charlotte.http import HTTPRequest, HTTPResponse
+from charlotte.helper import parse_binary_response
 
 
-async def fetch(address, port=80, message='', timeout=5, ssl=False, domain=None, loop=default_loop):
+async def fetch(address, port=80, message='', timeout=5, ssl=False, domain=None, loop=None):
     future = asyncio.open_connection(host=address, port=port, ssl=ssl,
                                      server_hostname=domain, loop=loop)
 
@@ -14,15 +13,15 @@ async def fetch(address, port=80, message='', timeout=5, ssl=False, domain=None,
     return await reader.read()
 
 
-async def fetch_http(address, message, timeout, loop=default_loop):
+async def fetch_http(address, message, timeout, loop=None):
     return await fetch(address=address, port=80, message=message, timeout=timeout, ssl=False, domain=None, loop=loop)
 
 
-async def fetch_https(address, domain, message, timeout, loop=default_loop):
+async def fetch_https(address, domain, message, timeout, loop=None):
     return await fetch(address=address, port=443, message=message, timeout=timeout, ssl=True, domain=domain, loop=loop)
 
 
-async def fetch_request(request: HTTPRequest, loop=default_loop) -> HTTPResponse:
+async def fetch_request(request: HTTPRequest, loop=None) -> HTTPResponse:
     """
     wrapper for fetch & fetch_* method,
     handle HTTPRequest object to HTTPResponse

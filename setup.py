@@ -23,8 +23,5 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Natural Language :: English',
     ], install_requires=[
-        'tornado',
-        'uvloop',
-        'redis'
     ]
 )
