@@ -2,9 +2,10 @@ import typing
 import logging
 import asyncio
 import functools
-from charlotte.core.http import HTTPRequest, HTTPResponse
+from charlotte import setting
+from charlotte.core.loop import default_loop
 from charlotte.core.fetch import fetch_request
-from .. import setting
+from charlotte.core.http import HTTPRequest, HTTPResponse
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ class BaseScheduler(object):
     middleware = ()
     max_concurrency = setting.default_max_concurrency
     concurrency = 0
+    pending = []
 
     def put(self, request: HTTPRequest) -> None:
         """
@@ -54,7 +56,7 @@ class BaseScheduler(object):
         else:
             raise ValueError("argument conn illegal.")
 
-    def fetch(self, request: HTTPRequest, parser=None) -> typing.Union[asyncio.futures, HTTPResponse, None]:
+    def fetch(self, request: HTTPRequest, parser=None) -> typing.Union[asyncio.Future, HTTPResponse, None]:
         """
         wrapper for downloader's fetch method.
         :param request: HTTPRequest object.
@@ -68,12 +70,17 @@ class BaseScheduler(object):
             logger.info('request {0} filtered by middleware.'.format(request.uri))
             return None
 
-        self.concurrency += 1  # todo where place
+        task = fetch_request(request)
 
-        response = fetch_request(request)
-        return self.handle(response, parser)
+        if parser:
+            self.pending.append(self.after_fetch(task, parser))
+        else:
+            self.pending.append(task)
 
-    def handle(self, response: HTTPResponse, parser=None):
+        future = asyncio.wait(self.pending, loop=default_loop)
+        return future
+
+    async def handle(self, response: HTTPResponse, parser=None):
         """
         wrapper for downloader's handle method.
         :param response: HTTPResponse object
@@ -110,3 +117,10 @@ class BaseScheduler(object):
             return parser(response)
         else:
             return response
+
+    async def after_fetch(self, task, callback):
+        response = self._load_mw(await task)
+        if response:
+            callback(response)
+        else:
+            logger.info("request filtered by middleware.")

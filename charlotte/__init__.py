@@ -7,6 +7,4 @@ except ImportError as e:
     logging.info("you can install uvloop for better performance.")
 else:
     import asyncio
-    from tornado.platform.asyncio import AsyncIOMainLoop
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    AsyncIOMainLoop().instance()

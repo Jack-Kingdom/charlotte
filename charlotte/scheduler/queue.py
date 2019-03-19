@@ -1,5 +1,5 @@
 from queue import Queue
-from tornado.httpclient import HTTPRequest
+from charlotte.core.http import HTTPRequest
 from charlotte.scheduler.base import BaseScheduler
 
 
