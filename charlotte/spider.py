@@ -14,6 +14,7 @@ class BaseSpider(object):
     Interface for Scheduler class
     """
 
+    name = "base_spider"    # used to format logging print
     default_loop = asyncio.get_event_loop()
     middleware = ()
     pending = []
