@@ -94,15 +94,20 @@ class BaseSpider(object):
         """
         pass
 
-    def run(self):
+    def run(self, loop=False, interval=3600):
         """
         run spider
         :return: None
         """
 
-        task = self.on_start()
         try:
-            self.default_loop.run_until_complete(asyncio.wait([task]))
+            if loop:
+                while True:
+                    self.default_loop.run_until_complete(
+                        asyncio.wait([self.on_start(), asyncio.sleep(interval, loop=self.default_loop)]))
+            else:
+                task = self.on_start()
+                self.default_loop.run_until_complete(asyncio.wait([task]))
         except KeyboardInterrupt:
             self.default_loop.stop()
             logger.error("received KeyboardInterrupt, spider execute interrupted.")
