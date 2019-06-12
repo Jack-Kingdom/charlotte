@@ -6,6 +6,8 @@ import hashlib
 from urllib.parse import urlparse
 from charlotte.http import HTTPRequest, HTTPResponse
 
+CRLF = b'\r\n'
+
 
 def url2request(url: str) -> HTTPRequest:
     """
@@ -23,18 +25,18 @@ def parse_binary_response(binary: bytes, response: HTTPResponse) -> HTTPResponse
     """
     parse a binary http response to HTTPResponse object
     """
-    meta, other = binary.split(b'\r\n', 1)
+    meta, other = binary.split(CRLF, 1)
 
     # parse meta info
     version, status_code, reason = meta.split(b' ', 2)
     response.version, response.status_code, response.reason = version.decode(), int(status_code), reason.decode()
 
-    raw_headers, raw_body = other.split(b'\r\n\r\n')
+    raw_headers, raw_body = other.split(CRLF * 2, 1)
 
     # parse header
     headers = {}
     str_headers = raw_headers.decode('utf-8')  # decode header first
-    for str_header in str_headers.split('\r\n'):
+    for str_header in str_headers.split(CRLF.decode()):
         key, value = str_header.split(': ')
         headers.setdefault(key, value)
 
