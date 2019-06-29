@@ -12,10 +12,6 @@ pip install charlotte
 ## Example
 
 ```python
-import json
-import asyncio
-from charlotte.spider import BaseSpider
-
 
 import json
 import asyncio
