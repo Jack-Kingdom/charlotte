@@ -3,10 +3,11 @@ from setuptools import setup, find_packages
 setup(
     name='charlotte',
     packages=find_packages(exclude=('test', 'tests.*')),
-    version='0.2.1',
+    version='0.2.3',
     url='https://github.com/Jack-Kingdom/charlotte',
     description='Lightweight and expandable spider framework.',
     long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
 
     author='Jack King',
     author_email='email@qiaohong.org',

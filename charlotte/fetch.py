@@ -13,12 +13,12 @@ async def fetch(address, port=80, message='', timeout=5, ssl=False, domain=None,
     return await reader.read()
 
 
-async def fetch_http(address, message, timeout, loop=None):
-    return await fetch(address=address, port=80, message=message, timeout=timeout, ssl=False, domain=None, loop=loop)
+def fetch_http(address, message, timeout, loop=None):
+    return fetch(address=address, port=80, message=message, timeout=timeout, ssl=False, domain=None, loop=loop)
 
 
-async def fetch_https(address, domain, message, timeout, loop=None):
-    return await fetch(address=address, port=443, message=message, timeout=timeout, ssl=True, domain=domain, loop=loop)
+def fetch_https(address, domain, message, timeout, loop=None):
+    return fetch(address=address, port=443, message=message, timeout=timeout, ssl=True, domain=domain, loop=loop)
 
 
 async def fetch_request(request: HTTPRequest, loop=None) -> HTTPResponse:

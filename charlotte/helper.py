@@ -40,8 +40,23 @@ def parse_binary_response(binary: bytes, response: HTTPResponse) -> HTTPResponse
         key, value = str_header.split(': ')
         headers.setdefault(key, value)
 
-    response.headers, response.body = headers, raw_body
+    # todo handle compressed response
+
+    response.headers = headers
+    response.body = parse_chunked_body(raw_body) if headers.get('Transfer-Encoding') == 'chunked' else raw_body
+
     return response
+
+
+def parse_chunked_body(raw_body):
+    body, left = b'', raw_body
+
+    while left:
+        hex_len, left = left.split(CRLF, 1)
+        decimal_len = int(hex_len, 16)
+        body, left = body + left[:decimal_len], left[decimal_len + len(CRLF):]
+
+    return body
 
 
 def str2hash(origin: str):
